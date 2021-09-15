@@ -1,0 +1,20 @@
+resource "aws_instance" "shahid_01" {
+  
+  ami = "ami-0ac80df6eff0e70b5"  #ubuntu ami-us-east-1
+  #ami = "ami-0a63f96e85105c6d3"  #ubuntu server 18.04 LTS -- ami-us-east-2
+  
+  instance_type = "t2.micro"
+  
+  #subnet_id     = aws_subnet.public_subnet.id
+  subnet_id     = aws_subnet.vpc-1-sub-a.id
+
+  key_name = "content-cyber-range-aws-key"
+  #key_name = "ohio-content-cyber-range-aws-key"
+
+  
+  vpc_security_group_ids      = ["${aws_security_group.sg-1.id}"]
+  #vpc_security_group_ids      = ["sg-024d79f1dd58fc2a9"]
+  
+  associate_public_ip_address = true
+  tags = {    Name = "shahid_01"  }
+}

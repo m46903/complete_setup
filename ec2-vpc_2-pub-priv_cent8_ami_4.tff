@@ -1,0 +1,12 @@
+resource "aws_instance" "ec2-vpc_2-pub-priv_cent8_ami_4" {
+  ami = "ami-075d33ebd39c47394" 
+  #ami                         = data.aws_ami.centos_8_victim.id
+  instance_type               = var.ec2_instance
+  key_name                    = var.key
+  subnet_id                   = aws_subnet.vpc-2-sub-a.id
+  vpc_security_group_ids      = ["${aws_security_group.sg-2.id}"]
+  private_ip                  = "10.11.1.34"
+  associate_public_ip_address = true
+    
+  tags = {  Name = "ec2-vpc_2-pub-priv_cent8_ami_4"  }
+}

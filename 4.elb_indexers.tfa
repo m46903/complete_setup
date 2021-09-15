@@ -1,0 +1,30 @@
+# this  file is  just a place holder for ELB
+
+resource "aws_elb" "indexer_elb1" {
+  name = "vpc-1-indexer-elb1"
+
+  security_groups = ["${aws_security_group.webserver_sg.id}",
+  "${aws_security_group.elb_sg.id}"]
+
+  subnets = ["${aws_subnet.vpc-1-sub-b.id}",
+  "${aws_subnet.vpc-1-sub-bb.id}", "${aws_subnet.vpc-1-sub-bbb.id}"]
+
+# this  file is  just a place holder for  ELB
+
+  listener {
+    lb_port           = 80
+    lb_protocol       = "http"
+    instance_port     = var.server_port
+    instance_protocol = "http"
+  }
+  health_check {
+
+    healthy_threshold   = 3
+    unhealthy_threshold = 2
+    timeout             = 3
+    interval            = 5
+    target              = "HTTP:${var.server_port}/"
+  }
+}
+# this  file is  just a place holder for ELB
+

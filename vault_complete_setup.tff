@@ -1,0 +1,39 @@
+resource "random_pet" "env" {
+  length    = 2
+  separator = "_"
+}
+
+resource "aws_kms_key" "vault" {
+  description             = "Vault unseal key"
+  deletion_window_in_days = 10
+
+  tags = {Name = "vault-kms-unseal"}
+}
+
+resource "aws_instance" "vault" {
+  instance_type = "t2.micro"
+  ami = "ami-0ac80df6eff0e70b5" #Ubuntu Server 18.04 LTS -- ami-us-east-1
+  key_name = "content-cyber-range-aws-key"
+  vpc_security_group_ids      = ["${aws_security_group.vault.id}"]
+  #vpc_security_group_ids      = ["sg-024d79f1dd58fc2a9"]
+  #security_groups = [aws_security_group.vault.id,]
+  
+  subnet_id     = aws_subnet.vpc-1-sub-b.id     #private subnet
+  associate_public_ip_address = false
+  ebs_optimized               = false
+  iam_instance_profile        = aws_iam_instance_profile.vault-kms-unseal.id
+
+  tags = {Name = "vault-ubuntu_ami" }
+
+  user_data = data.template_file.vault.rendered
+}
+
+data "template_file" "vault" {
+  template = file("userdata.tpl")
+
+  vars = {
+    kms_key    = aws_kms_key.vault.id
+    vault_url  = var.vault_url
+    aws_region = var.aws_region
+  }
+}

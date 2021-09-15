@@ -1,0 +1,19 @@
+resource "aws_instance" "instance2-sub-aa" {
+  #count =2
+  ami                         = var.ami
+  instance_type               = "t2.micro"
+  key_name                    = var.key
+  subnet_id                   = aws_subnet.vpc-1-sub-aa.id
+  vpc_security_group_ids      = ["${aws_security_group.sg-1.id}"]
+  private_ip                  = "10.10.10.5"
+  associate_public_ip_address = true
+
+  tags = {
+    Name     = "ec2-1-tgw-vpc-1-sub-aa"
+    scenario = var.scenario
+    env      = "main"
+    az       = var.az1
+    # Name = "ec2-${count.index + 5}-tgw-vpc-1"
+  }
+
+}

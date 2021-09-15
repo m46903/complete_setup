@@ -1,0 +1,50 @@
+resource "aws_instance" "victim-snort-1" {
+  #count =2
+  ami                         = var.ami
+  instance_type               = var.nitro
+  key_name                    = var.key
+  subnet_id                   = aws_subnet.vpc-1-sub-b.id
+  vpc_security_group_ids      = ["${aws_security_group.sg-1.id}"]
+  private_ip                  = "10.10.2.51"
+  associate_public_ip_address = false
+
+  tags = { Name     = "ec2-caasp-victim-snort-1" }
+}
+
+resource "aws_instance" "victim-zeek-1" {
+  #count =2
+  ami                         = var.ami
+  instance_type               = var.nitro
+  key_name                    = var.key
+  subnet_id                   = aws_subnet.vpc-1-sub-b.id
+  vpc_security_group_ids      = ["${aws_security_group.sg-1.id}"]
+  private_ip                  = "10.10.2.52"
+  associate_public_ip_address = false
+
+  tags = { Name     = "ec2-caasp-victim-zeek-1" }
+}
+
+resource "aws_instance" "victim-target-1" {
+  #count =2
+  ami                         = var.ami
+  instance_type               = var.nitro
+  key_name                    = var.key
+  subnet_id                   = aws_subnet.vpc-1-sub-a.id
+  vpc_security_group_ids      = ["${aws_security_group.sg-1.id}"]
+  private_ip                  = "10.10.1.53"
+  associate_public_ip_address = true
+
+  tags = { Name     = "ec2-caasp-victim-target-1" }
+}
+resource "aws_instance" "victim-target-2" {
+  #count =2
+  ami                         = var.ami
+  instance_type               = var.nitro
+  key_name                    = var.key
+  subnet_id                   = aws_subnet.vpc-1-sub-a.id
+  vpc_security_group_ids      = ["${aws_security_group.sg-1.id}"]
+  private_ip                  = "10.10.1.54"
+  associate_public_ip_address = true
+
+  tags = { Name     = "ec2-caasp-victim-target-2" }
+}

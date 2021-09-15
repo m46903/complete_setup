@@ -1,0 +1,28 @@
+resource "aws_instance" "cribl_test1" {
+  ami                         = var.ami
+  instance_type               = var.heavy_forwarder
+  key_name                    = var.key
+  subnet_id                   = aws_subnet.vpc-1-sub-b.id
+  vpc_security_group_ids      = ["${aws_security_group.private_sg.id}"]
+  availability_zone           = var.az3
+  associate_public_ip_address = false
+  source_dest_check           = false
+  user_data                   = file("userdata_cribl_test1.sh")
+
+  
+  tags = {Name = "splunk_cribl_test1" }
+}
+
+resource "aws_instance" "cribl_test2" {
+  ami                         = var.ami
+  instance_type               = var.heavy_forwarder
+  key_name                    = var.key
+  subnet_id                   = aws_subnet.vpc-1-sub-b.id
+  vpc_security_group_ids      = ["${aws_security_group.private_sg.id}"]
+  availability_zone           = var.az3
+  associate_public_ip_address = false
+  source_dest_check           = false
+  user_data                   = file("userdata_cribl_test2.sh")
+
+    tags = {Name = "splunk_cribl_test2" }
+}

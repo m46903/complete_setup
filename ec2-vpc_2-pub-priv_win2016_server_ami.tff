@@ -1,0 +1,13 @@
+resource "aws_instance" "ec2-vpc_2-pub-priv_win2016_server_ami" {
+  count = 3
+  #ami                         = data.aws_ami.win2016_server_victim.id
+  ami = "ami-0d3368e3e9d36a13c"
+  instance_type               = var.win2016_server
+  key_name                    = var.key
+  subnet_id                   = aws_subnet.vpc-2-sub-a.id
+  vpc_security_group_ids      = ["${aws_security_group.sg-2.id}"]
+  #private_ip                  = "10.11.1.61"
+  associate_public_ip_address = true
+    
+  tags = {  Name = "ec2-vpc_2-pub-priv_win2016_server_ami-SentinelOne-${count.index + 1}"  }
+}

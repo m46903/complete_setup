@@ -1,0 +1,15 @@
+resource "aws_instance" "ec2-vpc_2-priv-priv_cent7_ami_1" {
+  #ami                         = data.aws_ami.centos_7_victim.id
+  
+  #ami = "ami-068989c8e4b7e724b"
+  ami                    = var.ami
+  instance_type               = var.ec2_instance
+  key_name                    = var.key
+  subnet_id                   = aws_subnet.vpc-2-sub-b.id
+  vpc_security_group_ids      = ["${aws_security_group.sg-2.id}"]
+  #private_ip                  = "10.11.1.31"
+  associate_public_ip_address = false
+  source_dest_check           = false
+  #user_data = file("userdata_docker_hosts.sh")
+  tags = {  Name     = "ec2-vpc_2-priv-priv_cent7_ami_1"  }
+}

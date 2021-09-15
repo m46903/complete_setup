@@ -1,0 +1,40 @@
+resource "aws_db_subnet_group" "psql-subnet" {
+  name        = "psql-subnet"
+  description = "RDS subnet group"
+  subnet_ids  = [aws_subnet.vpc-1-sub-b.id, aws_subnet.vpc-1-sub-bb.id]
+}
+
+resource "aws_db_parameter_group" "psql-parameters" {
+  name        = "psql-parameters"
+  family      = "postgres11"
+  description = "psql parameter group"
+}
+
+# Follwoing are the steps to access postgrs db from a centos ec2
+# 1: yum install https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm -y
+# 2: yum install postgresql12 -y
+# 3: psql -h psql-db.c9fowi1eofeq.us-east-1.rds.amazonaws.com -d psql -U cnc
+# 4: \l
+
+resource "aws_db_instance" "test-psql-11_6-vpc-1" {
+  allocated_storage       = 100 # 100 GB of storage, gives us more IOPS than a lower number
+  engine                  = "postgres"
+  engine_version          = "11.6"
+  instance_class          = "db.m4.large" # use micro if you want to use the free tier
+  identifier              = "psql-db-11.6-vpc-1"
+  name                    = "psql"
+  username                = "cnc"            # username
+  password                = var.RDS_PASSWORD # password
+  db_subnet_group_name    = aws_db_subnet_group.psql-subnet.name
+  parameter_group_name    = aws_db_parameter_group.psql-parameters.name
+  multi_az                = "true" # set to true to have high availability: 2 instances synchronized with each other
+  vpc_security_group_ids  = [aws_security_group.allow_psql.id]
+  storage_type            = "gp2"
+  backup_retention_period = 30 # how long you’re going to keep your backups
+  #availability_zone       = aws_subnet.main-private-1.availability_zone # prefered AZ
+  skip_final_snapshot = true # skip final snapshot when doing terraform destroy
+  tags = {
+    Name = "psql_11.6_db_instance-vpc-1"
+  }
+}
+

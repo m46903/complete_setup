@@ -1,0 +1,27 @@
+resource "aws_instance" "ec2-vpc_1-pub_a-alb_1" {
+  #count =2
+  ami                         = var.ami
+  instance_type               = var.ec2_instance
+  key_name                    = var.key
+  subnet_id                   = aws_subnet.vpc-1-sub-a.id
+  vpc_security_group_ids      = ["${aws_security_group.webserver_sg.id}"]
+  private_ip                  = "10.10.1.110"
+  associate_public_ip_address = true
+  user_data                   = file("userdata_http_docker.sh")
+ 
+  tags = { Name = "ec2-vpc_1-pub_a-alb_1" }
+}
+
+resource "aws_instance" "ec2-vpc_1-pub_aa_alb_2" {
+  #count =2
+  ami                         = var.ami
+  instance_type               = var.ec2_instance
+  key_name                    = var.key
+  subnet_id                   = aws_subnet.vpc-1-sub-aa.id
+  vpc_security_group_ids      = ["${aws_security_group.webserver_sg.id}"]
+  private_ip                  = "10.10.10.110"
+  associate_public_ip_address = true
+  user_data                   = file("userdata_http_docker.sh")
+ 
+  tags = { Name = "ec2-vpc_1-pub_aa_alb_2" }
+}

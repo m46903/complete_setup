@@ -1,0 +1,90 @@
+## 1 ##
+resource "aws_lb" "splunk-search-head-dev1-alb" {
+  name     = "splunk-search-head-dev1-alb"
+  internal = false
+  ip_address_type    = "ipv4"
+  load_balancer_type = "application"
+  subnets = ["${aws_subnet.vpc-1-sub-a.id}",
+  "${aws_subnet.vpc-1-sub-aa.id}","${aws_subnet.vpc-1-sub-aaa.id}"]
+  security_groups = ["${aws_security_group.webserver_sg.id}",
+  "${aws_security_group.private_sg.id}","${aws_security_group.elb_sg.id}"]
+}
+
+## 2##
+resource "aws_lb_listener" "splunk-search-head-dev1-alb-listner" {
+  load_balancer_arn = aws_lb.splunk-search-head-dev1-alb.arn
+  port              = 80
+  protocol          = "HTTP"
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.splunk-search-head-dev1-tg.arn
+  }
+}
+
+## 3##
+resource "aws_lb_target_group" "splunk-search-head-dev1-tg" {
+  
+  name        = "splunk-search-head-dev1-tg"
+  port        = 888     #this port# does'nt matter
+  protocol    = "HTTP"
+  target_type = "instance"
+  deregistration_delay       = 10
+  vpc_id      = aws_vpc.vpc-1.id
+  
+  health_check {
+    interval            = 10
+    path                = "/"
+    protocol            = "HTTP"
+    timeout             = 5
+    healthy_threshold   = 2
+    unhealthy_threshold = 2
+  }
+}
+
+## 4##
+
+resource "aws_lb_target_group_attachment" "splunk-search-head-dev1-tg-attachment1" {
+  target_group_arn = aws_lb_target_group.splunk-search-head-dev1-tg.arn
+  target_id        = aws_instance.search_head_dev1.id
+  port             = 80
+}
+resource "aws_lb_target_group_attachment" "splunk-search-head-dev1-tg-attachment2" {
+  target_group_arn = aws_lb_target_group.splunk-search-head-dev1-tg.arn
+  target_id        = aws_instance.search_head_dev2.id
+  port             = 80
+}
+
+resource "aws_instance" "search_head_dev1" {
+  ami                         = var.ami
+  # "ami-0affd4508a5d2481b"
+  instance_type               = var.ec2_instance
+  key_name                    = var.key
+  subnet_id                   = aws_subnet.vpc-1-sub-b.id
+  #private_ip                  = "10.10.2.110"
+  vpc_security_group_ids      = ["${aws_security_group.private_sg.id}"]
+  availability_zone           =  var.az3
+  #associate_public_ip_address = true
+  source_dest_check           = false
+  user_data                   = file("userdata_cribl_test1.sh")
+  
+  tags = {  Name = "splunk_search_head_dev1"  }
+}
+
+resource "aws_instance" "search_head_dev2" {
+  ami                         = var.ami
+  # "ami-0affd4508a5d2481b"
+  instance_type               = var.ec2_instance
+  key_name                    = var.key
+  subnet_id                   = aws_subnet.vpc-1-sub-b.id
+  #private_ip                  = "10.10.2.110"
+  vpc_security_group_ids      = ["${aws_security_group.private_sg.id}"]
+  availability_zone           =  var.az3
+  #associate_public_ip_address = true
+  source_dest_check           = false
+  user_data                   = file("userdata_cribl_test2.sh")
+  
+  tags = {  Name = "splunk_search_head_dev2"  }
+}
+
+    
